@@ -1,8 +1,10 @@
 package com.scm_example.Smart_Contract_Manager.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,12 +17,22 @@ import com.scm_example.Smart_Contract_Manager.helper.MessageType;
 import com.scm_example.Smart_Contract_Manager.services.userServices;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class PageController {
 
   @Autowired
   private userServices userServices;
+
+    @RequestMapping("/")
+  public String index() {
+    System.out.println("home");
+    return "redirect:/home";
+
+  }
+
+
 
   @RequestMapping("/home")
   public String home() {
@@ -65,12 +77,17 @@ public class PageController {
 
   // processing Register
   @RequestMapping(value = "/do-register", method = RequestMethod.POST)
-  public String proccessRegister(@ModelAttribute UserForm userForm, HttpSession session) {
+  public String proccessRegister(@Valid @ModelAttribute UserForm userForm,BindingResult rBindingResult, HttpSession session) {
     System.out.println("Process Register");
     // fatch form data
-    System.out.println(userForm);
     // user form data
+    System.out.println(userForm);
     // validation form data
+ 
+    if(rBindingResult.hasErrors()){
+      return  "register";
+    }
+
     // save to database
 
     // user services
@@ -104,8 +121,9 @@ public class PageController {
     Message NewMessage = Message.builder().content("Register Successfull").type(MessageType.green).build();
     session.setAttribute("message", NewMessage);
 
-    // Redirect to login Page
 
+
+    // Redirect to login Page
     return "redirect:/register";
   }
 

@@ -7,9 +7,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scm_example.Smart_Contract_Manager.entities.user;
+import com.scm_example.Smart_Contract_Manager.helper.AppConstant;
 import com.scm_example.Smart_Contract_Manager.helper.ResourceNotFoundException;
 import com.scm_example.Smart_Contract_Manager.repositories.userRepo;
 import com.scm_example.Smart_Contract_Manager.services.userServices;
@@ -19,6 +21,10 @@ public class userServicesImplements implements userServices {
 
     @Autowired
     private userRepo userRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -30,7 +36,13 @@ public class userServicesImplements implements userServices {
 
         // password Encode
         // user.setPassword(userId);
+   user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+
+   // set the user roles
+   user.setRoleList(List.of(AppConstant.ROLE_USER));
+
+   logger.info(user.getProvider().toString());
         return userRepo.save(user);
     }
 
